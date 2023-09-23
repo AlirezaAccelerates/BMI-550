@@ -1,6 +1,7 @@
 # Alireza Rafiei | Assignment 1 | NLP
 
 # import libraries
+import numpy as np
 import pandas as pd
 import Levenshtein
 import nltk
@@ -118,7 +119,7 @@ for line in infile:
     negations.append(preprocessing(str.strip(line)))
 
 n, m = data.shape
-
+wordcloud = []
 for i in range(n):
     tokenized_post = list(nltk.word_tokenize(preprocessing(data.iloc[i,1])))
     all_symptoms = []
@@ -135,7 +136,8 @@ for i in range(n):
                 if is_similar(window_string, symptom):
                     if (CUI in all_symptoms) and window_size > 1:
                         continue
-                    all_symptoms.append(CUI)              
+                    all_symptoms.append(CUI) 
+                    wordcloud.append(CUI)             
 
                     is_negated = False
                     for neg in negations:
@@ -150,5 +152,6 @@ for i in range(n):
         data.iloc[i,2] = '$$$'+'$$$'.join(all_symptoms)+'$$$'
         data.iloc[i,3] = '$$$'+'$$$'.join(all_nags)+'$$$'
 
+np.save('wordcloud.npy',wordcloud)
 data.set_index('ID', inplace=True)
 data.to_excel('result.xlsx')
